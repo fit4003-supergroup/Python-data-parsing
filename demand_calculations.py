@@ -2,10 +2,6 @@
 # *note: assumes file 'DataSetFeatures.csv' is in same folder
 import pandas as pd
 
-# we want to map the information in each row to a dictionary
-# whose keys are are given by a fieldnames parameter
-data = pd.read_csv('DataSetfeatures.csv')
-
 
 # calculates demand value for a given scenario
 def feature_demand(scenario, feature):
@@ -24,6 +20,7 @@ def feature_demand(scenario, feature):
 
 
 def scenario_demand(scenario_num, overall_data, features_list):
+    # calculates the demand for the given scenario
     scenario = overall_data.iloc[scenario_num]
     scenario_id = scenario['feature_scenarioIdentifier']
 
@@ -41,16 +38,17 @@ def scenario_demand(scenario_num, overall_data, features_list):
     return demand_sum
 
 
-# we want to find the min, max and medium
-# for each feature in the feature_set, calculating
-# this only once for each feature is more efficient
 class Feature:
+    # object to store feature info
     def __init__(self, name, medium_demand):
         self.name = name
         self.medium_demand = medium_demand
 
 
 def feature_stats(overall_data, feature_set):
+    # determines the min, max and medium for
+    # each of the features
+    # creates a feature object and returns
     print("*********************************")
     print("CALCULATING FEATURE STATISTICS...")
     print("*********************************")
@@ -79,21 +77,18 @@ def scenario_demands(no_of_scenarios, overall_data, features_list):
         print('scenario: '+str(i)+', demand: '+str(demands[i]))
 
 
-# 1. list desired demand features
+# 1. we want to map the information in each row to a dictionary
+# whose keys are are given by a fieldnames parameter
+data = pd.read_csv('DataSetfeatures.csv')
+
+# 2. list desired demand features
 features_names = ['feature_ego_speedDemand', 'feature_rainDemand', 'feature_fogDemand', 'feature_wetnessDemand',
                   'feature_timeDemand', 'feature_scenarioTrafficLightDemand', 'feature_scenarioSideWalkDemand']
-# 2. find the feature's min, max, and demand
+# 3. find the feature's min, max, and demand
 features = feature_stats(data, features_names)
 
-# 3. find the demand for overall scenario
+# 4. find the demand for overall scenario
 # * not currently calculating for 60,000
 scenario_demands(1000, data, features)
 
-# DEMAND FEATURES
-# 'feature_ego_speedDemand'
-# 'feature_rainDemand'
-# 'feature_fogDemand'
-# 'feature_wetnessDemand'
-# 'feature_timeDemand'
-# 'feature_scenarioTrafficLightDemand'
-# 'feature_scenarioSideWalkDemand'
+
