@@ -1,6 +1,7 @@
 # code to parse and analyse features from DataSetfeatures file
 # *note: assumes file 'DataSetFeatures.csv' is in same folder
 import pandas as pd
+import statistics as stats
 
 
 class Feature:
@@ -40,7 +41,7 @@ def normalise_feature_values(overall_data, feature_objects):
         diff = feature.maximum - feature.minimum
         for i in range(0, len(overall_data[feature.name])):
             normalised_value = (overall_data[feature.name][i] - feature.minimum) / diff
-            print('normalised value: ' + str(normalised_value))
+            # print('normalised value: ' + str(normalised_value))
             overall_data[feature.name][i] = normalised_value
 
 
@@ -59,42 +60,71 @@ def two_scenario_diversity(prop_diversities):
 
     return diversity_sum / no_of_properties
 
+
 def overall_scenario_diversity(scenario, overall_data, feature_objects):
+    """
+
+    :param scenario: scenario to compute diversity metric for
+    :param overall_data: dataset
+    :param feature_objects: list of features to
+    :return: Diversity metric
+    """
     # sums the two scenario diversity between scenario
     # and all other scenarios
     overall_scenario_div = 0
 
     # for each feature, determine the property diversity between the two scenarios
     # for each scenario
+    # Preparing SDIV
     all_scenario_property_divs = []
     for i in range(0, len(overall_data.index)):
         # determine the property diversity
         two_scenario_property_divs = []
-        for feature in feature_objects:
-            if i != scenario:
+        if i != scenario:
+            for feature in feature_objects:
                 two_scenario_property_divs.append(kth_property_diversity(feature.name, scenario, i, overall_data))
-        all_scenario_property_divs.append(two_scenario_property_divs)
-        print('two_scenario_property_divs: '+str(two_scenario_property_divs))
-    print('all_scenario_property_divs: '+str(all_scenario_property_divs))
+            all_scenario_property_divs.append(two_scenario_property_divs)
+        # print('two_scenario_property_divs: '+str(two_scenario_property_divs))
+    # print('all_scenario_property_divs: '+str(all_scenario_property_divs))
 
     # sum the two scenario diversity
-    two_scenario_diversities = []
-    print('len(overall_data.index): '+str(len(overall_data.index)))
-    print('len(feature_objects): ' + str(len(feature_objects)))
+    two_scenario_diversities = [] # diversity metric between scenario, and all other tests
+    # print('len(overall_data.index): '+str(len(overall_data.index)))
+    # print('len(feature_objects): ' + str(len(feature_objects)))
 
-    for i in range(0, len(overall_data.index)-1):
+    # Computing SDIV for each other scenario
+    for i in range(0, len(all_scenario_property_divs)):
         diversity_sum = 0
-        for j in range(0, len(feature_objects)-1):
-            print(j)
+        for j in range(0, len(feature_objects)):
+            # print(j)
             diversity_sum += all_scenario_property_divs[i][j]
         two_scenario_diversities.append(diversity_sum / len(feature_objects))
 
-    print(two_scenario_diversities)
+    print("Scenario " + str(scenario + 1) + " diversity: " + str(round(sum(two_scenario_diversities), 4)) + ", average: " +
+          str(round(stats.mean(two_scenario_diversities), 4)))
+    return sum(two_scenario_diversities)
 
+
+def suite_diversity(data, feature_objects):
+    """
+    Runs scenario diversity for each scenario. I don't think the total suite diversity metric
+    is very useful as it would increase at an exponential rate based on the number of scenarios
+    :param data:
+    :param feature_objects:
+    :return:
+    """
+    print("\n*********************************")
+    print("CALCULATING DIVERSITY METRICS ...")
+    print("*********************************")
+    diversity_sum = 0
+    for i in range(len(data.index)):
+        diversity_sum += overall_scenario_diversity(i, data, feature_objects)
+    return diversity_sum
 
 # we want to map the information in each row to a dictionary
 # whose keys are are given by a fieldnames parameter
-data = pd.read_csv('DataSetfeatures.csv')
+DATA_LIMIT = 20  # limit the data for dev
+data = pd.read_csv('DataSetfeatures.csv', nrows=DATA_LIMIT)
 
 # STEPS FOR DIVERSITY CALCS
 # 1. normalise the property data so that the values fall between 0 and 1
@@ -107,3 +137,6 @@ normalise_feature_values(data, feature_objects)
 
 # 2. compute scenario diversity for Si with all other scenarios
 overall_scenario_diversity(0, data, feature_objects)
+
+# 3. Compute test suite diversity across all scenarios
+print("Total suite diversity: " + str(suite_diversity(data, feature_objects)))
