@@ -1,7 +1,7 @@
 # code to parse and analyse features from DataSetfeatures file
 # *note: assumes file 'DataSetFeatures.csv' is in same folder
 import pandas as pd
-
+import csv
 
 # calculates demand value for a given scenario
 def feature_demand(scenario, feature):
@@ -76,6 +76,19 @@ def scenario_demands(no_of_scenarios, overall_data, features_list):
     for i in range(0, len(demands)):
         print('scenario: '+str(i)+', demand: '+str(demands[i]))
 
+    return demands
+
+
+def write_to_csv(demand_results):
+    # open csv file in write mode
+    with open('demand_output.csv', 'w') as file:
+        # create csv writer
+        writer = csv.writer(file)
+        writer.writerow(['scenario no.', 'scenario demand'])
+        # write rows to file
+        for i in range(0, len(demand_results)):
+            writer.writerow([i, demand_results[i]])
+
 
 # 1. we want to map the information in each row to a dictionary
 # whose keys are are given by a fieldnames parameter
@@ -89,6 +102,7 @@ features = feature_stats(data, features_names)
 
 # 4. find the demand for overall scenario
 # * not currently calculating for 60,000
-scenario_demands(1000, data, features)
+demand_res = scenario_demands(60000, data, features)
 
-
+# 5. write to csv
+write_to_csv(demand_res)
