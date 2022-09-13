@@ -118,7 +118,6 @@ diversity_feature_names = [
 # get feature stats
 processed_diversity_features = feature_stats(data, diversity_feature_names)
 
-
 """
 outlier removal:
 - find outlier in feature data
@@ -130,6 +129,8 @@ TODO:
   that are outliers for the same scenario the removal is not
   duplicated (i.e. accidental removal of good data)
 """
+
+
 def feature_outlier_identification(feature_object):
     # get values
     # print('feature_object.data_values: ' + str(feature_object.data_values))
@@ -148,9 +149,9 @@ def feature_outlier_identification(feature_object):
     iqr_outlier_scenarios = []
     for i in range(0, len(iqr_values)):
         if iqr_values[i] < iqr_lower or iqr_values[i] > iqr_upper:
-            print('feature '+str(feature_object.name)+' has outlier in scenario: '+str(i))
+            print('feature ' + str(feature_object.name) + ' has outlier in scenario: ' + str(i))
             iqr_outlier_scenarios.append(i)
-    print('outlier scenarios: '+str(iqr_outlier_scenarios))
+    print('outlier scenarios: ' + str(iqr_outlier_scenarios))
     return iqr_outlier_scenarios
 
 
@@ -163,13 +164,14 @@ def remove_outliers(diversity_features):
     outlier_scenarios = []
     for feature in diversity_features:
         outlier_scenarios += feature_outlier_identification(feature)
-    print('overall outlier scenarios: '+str(outlier_scenarios))
+    print('overall outlier scenarios: ' + str(outlier_scenarios))
 
     # remove the scenario data for outlier scenarios
     for scenario in outlier_scenarios:
         print('removing data for scenario ' + str(scenario))
         for feature in diversity_features:
             feature.data_values.pop(scenario)
+
 
 remove_outliers(processed_diversity_features)
 
@@ -205,11 +207,11 @@ def print_to_csv(feature_names, processed_features):
         for i in range(0, len(processed_features[0].data_values)):
             # initialise row with 1st column as scenario id
             row_data = [i]
-            print('compiling data for row '+str(i)+' ...')
+            print('compiling data for row ' + str(i) + ' ...')
             # for each feature append feature data
             for j in range(0, len(processed_features)):
                 row_data.append(processed_features[j].data_values[i])
-            print('row '+str(i)+' data: '+str(row_data))
+            print('row ' + str(i) + ' data: ' + str(row_data))
             # write the row of data:
             writer.writerow(row_data)
 
