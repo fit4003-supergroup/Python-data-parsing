@@ -3,6 +3,7 @@
 import pandas as pd
 import statistics as stats
 import csv
+import math
 
 
 class Feature:
@@ -42,13 +43,20 @@ def normalise_feature_values(overall_data, feature_objects):
         diff = feature.maximum - feature.minimum
         for i in range(0, len(overall_data[feature.name])):
             normalised_value = (overall_data[feature.name][i] - feature.minimum) / diff
-            print('normalised value: ' + str(normalised_value))
+            # print('normalised value: ' + str(normalised_value))
 
 
-def kth_property_diversity(feature_name, scenario1, scenario2, overall_data):
-    # computes the kth property diversity PDIVk between two scenarios
-    # scenario1 and 2 are int values representing scenario name
-    return abs(overall_data[feature_name][scenario1] - overall_data[feature_name][scenario2])
+# Superseded by manhattan_distance function; same functionality
+# def kth_property_distance(feature_name, scenario1, scenario2, overall_data):
+#     # computes the kth property diversity PDIVk between two scenarios
+#     # scenario1 and 2 are int values representing scenario name
+#     return abs(overall_data[feature_name][scenario1] - overall_data[feature_name][scenario2])
+
+def euclidean_distance(n1, n2) -> float:
+    return math.sqrt(n1 ** 2 - n2 ** 2)
+
+def manhattan_distance(n1, n2):
+    return abs(n1 - n2)
 
 
 def overall_scenario_diversity(scenario, overall_data, feature_objects):
@@ -68,7 +76,8 @@ def overall_scenario_diversity(scenario, overall_data, feature_objects):
         two_scenario_property_divs = []
         if i != scenario:
             for feature in feature_objects:
-                two_scenario_property_divs.append(kth_property_diversity(feature.name, scenario, i, overall_data))
+                two_scenario_property_divs.append(manhattan_distance(overall_data[feature.name][scenario],
+                                                                     overall_data[feature.name][i]))
                 # print('two_scenario_property_divs: ' + str(two_scenario_property_divs))
             all_scenario_property_divs.append(two_scenario_property_divs)
     # print('all_scenario_property_divs: '+str(all_scenario_property_divs))
@@ -83,8 +92,8 @@ def overall_scenario_diversity(scenario, overall_data, feature_objects):
             diversity_sum += all_scenario_property_divs[i][j]
         two_scenario_diversities.append(diversity_sum / len(feature_objects))
 
-    print("Scenario " + str(scenario + 1) + " diversity: " + str(round(sum(two_scenario_diversities), 4)) + ", average: " +
-          str(round(stats.mean(two_scenario_diversities), 4)))
+    # print("Scenario " + str(scenario + 1) + " diversity: " + str(round(sum(two_scenario_diversities), 4)) + ", average: " +
+    #       str(round(stats.mean(two_scenario_diversities), 4)))
     return sum(two_scenario_diversities)
 
 
