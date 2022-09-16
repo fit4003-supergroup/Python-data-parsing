@@ -45,21 +45,7 @@ def normalise_feature_values(overall_data, feature_objects):
             normalised_value = (overall_data[feature.name][i] - feature.minimum) / diff
             # print('normalised value: ' + str(normalised_value))
 
-
-# Superseded by manhattan_distance function; same functionality
-# def kth_property_distance(feature_name, scenario1, scenario2, overall_data):
-#     # computes the kth property diversity PDIVk between two scenarios
-#     # scenario1 and 2 are int values representing scenario name
-#     return abs(overall_data[feature_name][scenario1] - overall_data[feature_name][scenario2])
-
-def euclidean_distance(n1, n2) -> float:
-    return math.sqrt(n1 ** 2 - n2 ** 2)
-
-def manhattan_distance(n1, n2):
-    return abs(n1 - n2)
-
-
-def overall_scenario_diversity(scenario, overall_data, feature_objects):
+def overall_scenario_diversity(scenario, overall_data, feature_objects, distance_type = 'manhattan'):
     """
     Determines the sum of the two-scenario diversities between
     scenario and every other scenario, SDIV.
@@ -76,8 +62,13 @@ def overall_scenario_diversity(scenario, overall_data, feature_objects):
         two_scenario_property_divs = []
         if i != scenario:
             for feature in feature_objects:
-                two_scenario_property_divs.append(manhattan_distance(overall_data[feature.name][scenario],
-                                                                     overall_data[feature.name][i]))
+                difference = abs((overall_data[feature.name][scenario] - overall_data[feature.name][i]))
+                if distance_type == 'manhattan':
+                    two_scenario_property_divs.append(difference)
+                elif distance_type == 'euclidean':
+                    two_scenario_property_divs.append(difference**2)
+                else:
+                    raise Exception("distance_type must be one of 'manhattan','euclidean'")
                 # print('two_scenario_property_divs: ' + str(two_scenario_property_divs))
             all_scenario_property_divs.append(two_scenario_property_divs)
     # print('all_scenario_property_divs: '+str(all_scenario_property_divs))
@@ -87,10 +78,11 @@ def overall_scenario_diversity(scenario, overall_data, feature_objects):
 
     # Computing SDIV for each other scenario
     for i in range(0, len(all_scenario_property_divs)):
-        diversity_sum = 0
-        for j in range(0, len(feature_objects)):
-            diversity_sum += all_scenario_property_divs[i][j]
-        two_scenario_diversities.append(diversity_sum / len(feature_objects))
+        diversity_sum = sum(all_scenario_property_divs[i])
+        if distance_type == 'manhattan':
+            two_scenario_diversities.append(diversity_sum / len(feature_objects))
+        else:
+            two_scenario_diversities.append(round(math.sqrt(diversity_sum) / len(feature_objects),4))
 
     # print("Scenario " + str(scenario + 1) + " diversity: " + str(round(sum(two_scenario_diversities), 4)) + ", average: " +
     #       str(round(stats.mean(two_scenario_diversities), 4)))
@@ -123,27 +115,27 @@ def write_to_csv(diversity_results):
         # write rows to file
         writer.writerows(diversity_results)
 
+if __name__ == "__main__":
+    # STEPS FOR DIVERSITY CALCS
+    # 1. extract data from csv
+    # we want to map the information in each row to a dictionary
+    # whose keys are are given by a fieldnames parameter
+    DATA_LIMIT = 1000  # limit the data for dev
+    data = pd.read_csv('DataSetfeatures.csv', nrows=DATA_LIMIT)
 
-# STEPS FOR DIVERSITY CALCS
-# 1. extract data from csv
-# we want to map the information in each row to a dictionary
-# whose keys are are given by a fieldnames parameter
-DATA_LIMIT = 1000  # limit the data for dev
-data = pd.read_csv('DataSetfeatures.csv', nrows=DATA_LIMIT)
+    # 2. find feature statistics (min, max, etc.)
+    # included diversity features:
+    features_strings = ['feature_ego_speed', 'feature_totalNPCs']
+    feature_objects = feature_stats(data, features_strings)
 
-# 2. find feature statistics (min, max, etc.)
-# included diversity features:
-features_strings = ['feature_ego_speed', 'feature_totalNPCs']
-feature_objects = feature_stats(data, features_strings)
+    # 3. normalise the property data so that the values fall between 0 and 1
+    normalise_feature_values(data, feature_objects)
 
-# 3. normalise the property data so that the values fall between 0 and 1
-normalise_feature_values(data, feature_objects)
+    # 4. Compute test suite diversity across all scenarios
+    # print("Total suite diversity: " + str(suite_diversity(data, feature_objects)))
+    diversity_res = []
+    for i in range(len(data.index)):
+        diversity_res.append([i, round(overall_scenario_diversity(i, data, feature_objects), 4)])
 
-# 4. Compute test suite diversity across all scenarios
-# print("Total suite diversity: " + str(suite_diversity(data, feature_objects)))
-diversity_res = []
-for i in range(len(data.index)):
-    diversity_res.append([i, round(overall_scenario_diversity(i, data, feature_objects), 4)])
-
-# 5. write output to csv file
-write_to_csv(diversity_res)
+    # 5. write output to csv file
+    write_to_csv(diversity_res)
