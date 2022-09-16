@@ -43,6 +43,7 @@ def normalise_feature_values(overall_data, feature_objects):
         diff = feature.maximum - feature.minimum
         for i in range(0, len(overall_data[feature.name])):
             normalised_value = (overall_data[feature.name][i] - feature.minimum) / diff
+            overall_data[feature.name][i] = normalised_value
             # print('normalised value: ' + str(normalised_value))
 
 def overall_scenario_diversity(scenario, overall_data, feature_objects, distance_type = 'manhattan'):
