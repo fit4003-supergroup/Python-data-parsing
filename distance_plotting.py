@@ -16,7 +16,7 @@ def static_dist_comparison(data, feature_objects):
     print('Starting static_dist_comparison')
 
     feature_length_range = [2, 4, 6]
-    fig, axs = plt.subplots(1, len(feature_length_range), sharey=True)
+    fig, axs = plt.subplots(1, len(feature_length_range))
     fig.suptitle('Diversity spread, n = ' + str(len(data)))
     plt.subplots_adjust(wspace=0.5)
 
@@ -102,7 +102,7 @@ def feature_length_comparison(data, feature_objects):
 
     feature_length_range = np.arange(2, len(feature_objects) + 1, 2)
     fig, axs = plt.subplots(math.ceil(feature_length_range.size / 2), 2)
-    plt.subplots_adjust(hspace=0.5)
+    plt.subplots_adjust(hspace=0.5, wspace=0.5)
     ax_flat = []
     for row in axs:
         for col in row:
@@ -114,6 +114,8 @@ def feature_length_comparison(data, feature_objects):
         manhattan_results, euclidean_results = average_diversity(n_range, features, data)
         ax.plot(n_range, manhattan_results, marker='o', label='Manhattan')
         ax.plot(n_range, euclidean_results, color='red', marker='o', label='Euclidean')
+        ax.set_ylabel('Average scenario diversity')
+        ax.set_xlabel('Number of scenarios')
         ax.set_title('feature length = ' + str(len(features)))
         handles, labels = ax.get_legend_handles_labels()
         fig.legend(handles, labels, loc='lower right')
@@ -131,8 +133,8 @@ if __name__ == '__main__':
     feature_objects = feature_stats(data, features_strings)
     normalise_feature_values(data, feature_objects)
 
-    static_dist_comparison(data.head(50), feature_objects)
+    static_dist_comparison(data.head(1000), feature_objects)
     dynamic_dist_comparison(data, feature_objects[:2])
     feature_length_comparison(data, feature_objects)
 
-    plt.show()
+    plt.show()  # show all figures generated from functions

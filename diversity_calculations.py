@@ -1,5 +1,6 @@
 # code to parse and analyse features from DataSetfeatures file
 # *note: assumes file 'DataSetFeatures.csv' is in same folder
+import numpy as np
 import pandas as pd
 import statistics as stats
 import csv
@@ -79,7 +80,7 @@ def overall_scenario_diversity(scenario, overall_data, feature_objects, distance
 
     # Computing SDIV for each other scenario
     for i in range(0, len(all_scenario_property_divs)):
-        diversity_sum = sum(all_scenario_property_divs[i])
+        diversity_sum = np.nansum(all_scenario_property_divs[i])
         if distance_type == 'manhattan':
             two_scenario_diversities.append(diversity_sum / len(feature_objects))
         else:
