@@ -1,4 +1,5 @@
 """
+USED FOR RESEARCH PURPOSES
 file to read from data from DataSetfeatures.csv and
 identify outliers in the data.
 """
@@ -11,7 +12,7 @@ import pandas as pd
 
 # read data from csv
 DATA_LIMIT = 10000  # limit the data for dev
-data = pd.read_csv('DataSetfeatures.csv', nrows=DATA_LIMIT)
+data = pd.read_csv('../DataSetfeatures.csv', nrows=DATA_LIMIT)
 
 # define features
 feature_name = 'feature_ego_speed'

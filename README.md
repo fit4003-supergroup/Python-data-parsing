@@ -4,15 +4,14 @@ Storing files for parsing, cleaning and calculating data from the dataset in pyt
 Note:
 - Current code assumes you have file `DataSetfeatures.csv` located in the same directory; check that the row names match those described in the code. 
 
-`preprocessing.py` :
-- Running this file will process the raw data and write the output to two files
-- The demand data will be written to `demand_input.csv` for use in demand calculations.
-- The diversity data will be written to `diversity_input.csv` for use in diversity calculations.
+`main.py`:
+- This file calls functions from `preprocessing.y` to pre-process the data from
+ `DataSetfeatures.csv`, write to the `diversity_input.csv` and `demand_input.csv` files. 
+- Functions are then called from `demand_calculations.py`, and `diversity_calculations.py` 
+  which read the data from the input files and compute the relevant calculations before
+  writing the results to the `demand_output.csv` and `diversity_output.csv` files respectively.
 
-`demand_calculations.py` :
-- Running this file will carry out the demand calculations on the selected dataset features
-- This will print the results to a `demand_output.csv` file in the same folder.
-
-`diversity_calculations.py` :
-- Running this file will carry out the diversity calculations on the selected dataset features
-- This will print the results to a `diversity_output.csv` file in the same folder.
+`speed_demand_fix.py`
+- This file identifies and updates incorrect speed classifications in the 
+  `DataSetfeatures.csv` file.
+- This should be run only once before `main.py`.
