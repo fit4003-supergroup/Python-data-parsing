@@ -2,7 +2,6 @@
 file to add combination features to DataSetfeatures.csv
 """
 import pandas as pd
-from aggressiveness_features import *
 from create_combo_features import *
 
 # read the csv file
