@@ -2,8 +2,6 @@
 file to read from data from DataSetfeatures.csv and
 identify and update incorrect speed classifications
 """
-from msilib.schema import Error
-from selectors import EpollSelector
 import pandas as pd
 
 # define column headings
