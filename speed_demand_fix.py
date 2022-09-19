@@ -35,31 +35,26 @@ class SpeedCategory(DemandCategory):
         elif moderate_max_speed < speed:
             DemandCategory.__init__(self, 4, "Fast (speed (m/s) > 8)")
         
-
-
-# read data from csv
-data = pd.read_csv('DataSetfeatures.csv', index_col=0)
-
-# iterate through rows
-for index, row in data.iterrows():
-    
-    # extrect speed and current demand and label
-    speed = row[speed_heading]
-    old_demand = row[speed_demand_heading]
-    old_label = row[speed_label_heading]
-    
-    # generate demand and label
-    category = SpeedCategory(speed)
-    new_demand = category.demand
-    new_label = category.label
-    
-    # update if extracted and generated do not match
-    if old_demand != new_demand or old_label != new_label:
-        print("updating scenario " + str(index))
-        data.loc[index, speed_demand_heading] = new_demand
-        data.loc[index, speed_label_heading] = new_label
+def calculate_speed_demand(data):
+    # iterate through rows
+    for index, row in data.iterrows():
         
+        # extrect speed and current demand and label
+        speed = row[speed_heading]
+        old_demand = row[speed_demand_heading]
+        old_label = row[speed_label_heading]
+        
+        # generate demand and label
+        category = SpeedCategory(speed)
+        new_demand = category.demand
+        new_label = category.label
+        
+        # update if extracted and generated do not match
+        if old_demand != new_demand or old_label != new_label:
+            data.loc[index, speed_demand_heading] = new_demand
+            data.loc[index, speed_label_heading] = new_label
+            
 
-print("saving...")
-data.to_csv('DataSetfeatures.csv')
+    print("saving speed demand...")
+    data.to_csv('DataSetfeatures.csv')
 
