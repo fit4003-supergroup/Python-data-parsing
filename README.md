@@ -11,7 +11,15 @@ Note:
   which read the data from the input files and compute the relevant calculations before
   writing the results to the `demand_output.csv` and `diversity_output.csv` files respectively.
 
-`speed_demand_fix.py`
+`speed_demand_fix.py`:
 - This file identifies and updates incorrect speed classifications in the 
   `DataSetfeatures.csv` file.
 - This should be run only once before `main.py`.
+
+`distance_plotting.py`:
+- Calculates and plots the diversity of the scenarios using Manhattan and Euclidean
+  distance metrics.
+  
+`correlation_analysis.py`:
+- Calculates Spearmans and Pearsons correlation for data and writes output to 
+  `correlation_output_collision_event.xlsx`.
