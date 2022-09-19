@@ -4,6 +4,7 @@ import numpy as np
 
 from diversity_calculations import *
 
+
 def static_dist_comparison(data, feature_objects):
     """
     Plots two diversity spreads for the same dataset using both euclidean and manhattan distance.
@@ -13,26 +14,32 @@ def static_dist_comparison(data, feature_objects):
     :return:
     """
     print('Starting static_dist_comparison')
-    manhattan_div = []
-    for i in range(len(data.index)):
-        manhattan_div.append(round(overall_scenario_diversity(i, data, feature_objects, 'manhattan'), 4))
 
-    euclidean_div = []
-    for i in range(len(data.index)):
-        euclidean_div.append(round(overall_scenario_diversity(i, data, feature_objects, 'euclidean'), 4))
-
-    SCATTER_CENTRE = 10  # TODO: Make this dynamic to centre of histogram
-    fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-
+    feature_length_range = [2, 4, 6]
+    fig, axs = plt.subplots(1, len(feature_length_range))
     fig.suptitle('Diversity spread, n = ' + str(len(data)))
-    # ax1.scatter(np.full(len(manhattan_div), SCATTER_CENTRE), manhattan_div)
-    ax1.hist(manhattan_div, bins='auto', orientation='horizontal', histtype='stepfilled', color='purple')
-    ax1.set_xlabel('Number of points')
-    ax1.set_title('Manhattan')
-    # ax2.scatter(np.full(len(euclidean_div), SCATTER_CENTRE), euclidean_div)
-    ax2.hist(euclidean_div, bins='auto', orientation='horizontal', histtype='stepfilled', color='orange')
-    ax2.set_title('Euclidean')
-    ax2.set_xlabel('Number of points')
+    plt.subplots_adjust(wspace=0.5)
+
+    for i in range(len(axs)):
+        ax = axs[i]
+        n = feature_length_range[i]
+        manhattan_div = []
+        for j in range(len(data.index)):
+            manhattan_div.append(round(overall_scenario_diversity(j, data, feature_objects[:n], 'manhattan'), 4))
+
+        euclidean_div = []
+        for j in range(len(data.index)):
+            euclidean_div.append(round(overall_scenario_diversity(j, data, feature_objects[:n], 'euclidean'), 4))
+
+        ax.hist(manhattan_div, bins='auto', orientation='horizontal', histtype='stepfilled', color='purple', label='Manhattan', alpha=0.5)
+        ax.hist(euclidean_div, bins='auto', orientation='horizontal', histtype='stepfilled', color='orange', label='Euclidean', alpha=0.5)
+        ax.set_xlabel('Number of points')
+        ax.set_title('features = ' + str(n))
+        handles, labels = ax.get_legend_handles_labels()
+        fig.legend(handles, labels, loc='center right') # TODO: Find a better location
+        print('Finished static dist plot ' + str(i+1) + ' of ' + str(len(feature_length_range)))
+
+
     plt.savefig('plots/static_dist.png')
 
 
@@ -81,6 +88,12 @@ def dynamic_dist_comparison(data, feature_objects):
 
 
 def feature_length_comparison(data, feature_objects):
+    """
+    Plots the diversity averages across multiple different suite sizes and feature_object lengths
+    :param data:
+    :param feature_objects:
+    :return:
+    """
     print('Starting feature_length_comparison')
     MIN_N = 50
     MAX_N = 300
@@ -89,7 +102,7 @@ def feature_length_comparison(data, feature_objects):
 
     feature_length_range = np.arange(2, len(feature_objects) + 1, 2)
     fig, axs = plt.subplots(math.ceil(feature_length_range.size / 2), 2)
-    plt.subplots_adjust(hspace=0.5)
+    plt.subplots_adjust(hspace=0.5, wspace=0.5)
     ax_flat = []
     for row in axs:
         for col in row:
@@ -101,6 +114,8 @@ def feature_length_comparison(data, feature_objects):
         manhattan_results, euclidean_results = average_diversity(n_range, features, data)
         ax.plot(n_range, manhattan_results, marker='o', label='Manhattan')
         ax.plot(n_range, euclidean_results, color='red', marker='o', label='Euclidean')
+        ax.set_ylabel('Average scenario diversity')
+        ax.set_xlabel('Number of scenarios')
         ax.set_title('feature length = ' + str(len(features)))
         handles, labels = ax.get_legend_handles_labels()
         fig.legend(handles, labels, loc='lower right')
@@ -118,8 +133,8 @@ if __name__ == '__main__':
     feature_objects = feature_stats(data, features_strings)
     normalise_feature_values(data, feature_objects)
 
-    static_dist_comparison(data.head(1000), feature_objects[:2])
+    static_dist_comparison(data.head(1000), feature_objects)
     dynamic_dist_comparison(data, feature_objects[:2])
     feature_length_comparison(data, feature_objects)
 
-    plt.show()
+    plt.show()  # show all figures generated from functions

@@ -123,7 +123,7 @@ def remove_outliers(diversity_features):
     :param diversity_features:
     :return:
     """
-    print("\nIdentifying Outliers    ...")
+    print("Identifying Outliers...")
     # for each feature identify any scenarios with outliers
     outlier_scenarios = []
     for feature in diversity_features:
@@ -134,7 +134,7 @@ def remove_outliers(diversity_features):
 
     print('scenarios with outliers: ' + str(outlier_scenarios))
 
-    print("\nRemoving Outliers    ...")
+    print("Removing Outliers...")
     # remove the scenario data for outlier scenarios
     # for scenario in outlier_scenarios:
     #     for feature in diversity_features:
@@ -149,7 +149,7 @@ def normalise_feature_values(feature_objects):
     :param feature_objects: Feature instances
     :return: n/a
     """
-    print("\nNormalising Feature values ...")
+    print("Normalising Feature values...")
     for feature in feature_objects:
         diff = feature.max_value - feature.min_value
         for i in range(0, len(feature.data_values)):

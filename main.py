@@ -10,15 +10,16 @@ Running this file will:
 
 import pandas as pd
 import preprocessing
-import new_demand_calculations
-import new_diversity_calculations
+import demand_calculations
+import diversity_calculations
 
 """
 PRE-PROCESSING STEPS
 """
-print('\nBeginning Pre-processing ...')
+print('\nBeginning Pre-processing...')
+
 # read the csv file
-DATA_LIMIT = 1000  # only reads first 100 rows
+DATA_LIMIT = 100  # only reads first 100 rows
 data = pd.read_csv('DataSetfeatures.csv', nrows=DATA_LIMIT)
 
 demand_feature_names = [
@@ -73,10 +74,10 @@ print('\nBeginning Diversity Calculations...')
 processed_data = pd.read_csv('diversity_input.csv')
 
 # compute diversity
-diversities = new_diversity_calculations.compute_diversity(processed_data)
+diversities = diversity_calculations.compute_diversity(processed_data)
 
 # write to csv
-new_diversity_calculations.write_results_to_csv(diversities)
+diversity_calculations.write_results_to_csv(diversities)
 print('Diversity Calculations Complete!')
 
 """
@@ -88,11 +89,11 @@ demand_processed_data = pd.read_csv('demand_input.csv')
 
 # get metadata about features
 feature_names = list(demand_processed_data.columns)
-features = new_demand_calculations.feature_stats(demand_processed_data, feature_names)
+features = demand_calculations.feature_stats(demand_processed_data, feature_names)
 
 # determine the demand values for scenarios
-demand_res = new_demand_calculations.scenario_demands(demand_processed_data, features)
+demand_res = demand_calculations.scenario_demands(demand_processed_data, features)
 
 # write results to output csv file
-new_demand_calculations.write_output_to_csv(demand_res)
+demand_calculations.write_output_to_csv(demand_res)
 print('Demand Calculations Complete!')

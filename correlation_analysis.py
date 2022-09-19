@@ -10,14 +10,17 @@ from scipy.stats import spearmanr
 from scipy.stats import pearsonr
 import statistics
 
+
 class Feature:
-    def __init__(self, name, spearman_correlation, spearman_pvalue, pearson_correlation, pearson_pvalue, data_values) -> None:
+    def __init__(self, name, spearman_correlation, spearman_pvalue, pearson_correlation, pearson_pvalue,
+                 data_values) -> None:
         self.name = name
         self.spearman_correlation = spearman_correlation
         self.spearman_pvalue = spearman_pvalue
         self.data_values = data_values
         self.pearson_correlation = pearson_correlation
-        self.pearson_pvalue = pearson_pvalue        
+        self.pearson_pvalue = pearson_pvalue
+
 
 def feature_stats(overall_data, feature_set):
     feature_objects = []
@@ -29,14 +32,14 @@ def feature_stats(overall_data, feature_set):
 
         # calculate correlation with collisionProbability
 
-        spear_corr, spear_pvalue = spearmanr(overall_data[feature], overall_data["feature_collisionEventDemand"], nan_policy="omit")
+        spear_corr, spear_pvalue = spearmanr(overall_data[feature], overall_data["feature_collisionEventDemand"],
+                                             nan_policy="omit")
         pears_corr, pears_pvalue = pearsonr(overall_data[feature], overall_data["feature_collisionEventDemand"])
 
         # create object to store
         feature_objects.append(Feature(feature, spear_corr, spear_pvalue, pears_corr, pears_pvalue, data_values))
 
     return feature_objects
-
 
 
 # def standardised_feature_stats(overall_data, feature_set):
@@ -128,21 +131,27 @@ correlation_feature_names = [
     "feature_collisionProbabilityTimeStamp"
 ]
 
-
 correlation_features = feature_stats(data, correlation_feature_names)
 feature_correlations = []
 
-def write_to_csv(correlation_features):  
+
+def write_to_csv(correlation_features):
     # open csv file in write mode
     with open('correlation_output_collision_event.csv', 'w') as file:
         # create csv writer
         writer = csv.writer(file)
-        writer.writerow(['feature name', 'spearman feature correlation', 'spearman feature pvalue', 'pearson feature correlation', 'pearson pvalue'])
+        writer.writerow(
+            ['feature name', 'spearman feature correlation', 'spearman feature pvalue', 'pearson feature correlation',
+             'pearson pvalue'])
         # write rows to file
         for i in range(0, len(correlation_features)):
-            feature_correlations.append([correlation_features[i].name, correlation_features[i].spearman_correlation, correlation_features[i].spearman_pvalue, 
-            correlation_features[i].pearson_correlation, correlation_features[i].pearson_pvalue])
-            writer.writerow([correlation_features[i].name, correlation_features[i].spearman_correlation, correlation_features[i].spearman_pvalue, 
-            correlation_features[i].pearson_correlation, correlation_features[i].pearson_pvalue])
+            feature_correlations.append([correlation_features[i].name, correlation_features[i].spearman_correlation,
+                                         correlation_features[i].spearman_pvalue,
+                                         correlation_features[i].pearson_correlation,
+                                         correlation_features[i].pearson_pvalue])
+            writer.writerow([correlation_features[i].name, correlation_features[i].spearman_correlation,
+                             correlation_features[i].spearman_pvalue,
+                             correlation_features[i].pearson_correlation, correlation_features[i].pearson_pvalue])
+
 
 write_to_csv(correlation_features)
