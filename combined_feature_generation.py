@@ -26,5 +26,4 @@ def calculate_combined_features(data):
     print("calculating aggressiveness features...")
     create_combo_features(aggressivness_combo_inputs, data)
 
-    print("saving combo features...")
-    data.to_csv('DataSetfeatures.csv')
+    return data

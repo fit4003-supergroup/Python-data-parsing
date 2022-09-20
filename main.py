@@ -22,7 +22,8 @@ READ INPUT FILE
 """
 # read the csv file
 file_name = 'DataSetfeatures.csv'
-DATA_LIMIT = 1000  # only reads first 100 rows
+modified_file_name = 'DataSetfeatures-modified.csv'
+DATA_LIMIT = 10000  # only reads first 10000 rows
 print('Reading ' + str(DATA_LIMIT) + " lines from " + file_name)
 data = pd.read_csv(file_name, nrows=DATA_LIMIT, index_col=0)
 
@@ -30,13 +31,16 @@ data = pd.read_csv(file_name, nrows=DATA_LIMIT, index_col=0)
 DATA SET MODIFICATION
 """
 print('\nRecalculating Speed Demand...')
-speed_demand_fix.calculate_speed_demand(data)
+modified_data = speed_demand_fix.calculate_speed_demand(data)
 
 """
 CALCULATE COMBINATION FEATURES
 """
 print('\nCalculating combination features...')
-combined_feature_generation.calculate_combined_features(data)
+modified_data = combined_feature_generation.calculate_combined_features(modified_data)
+
+print("saving speed demand & combined features...")
+modified_data.to_csv(modified_file_name)
 
 """
 PRE-PROCESSING STEPS
@@ -45,7 +49,7 @@ print('\nBeginning Pre-processing...')
 
 # read data again 
 # need to do this because indexing needs to be different for following steps
-data = pd.read_csv(file_name, nrows=DATA_LIMIT)
+data = pd.read_csv(modified_file_name, nrows=DATA_LIMIT)
 
 demand_feature_names = [
     'feature_ego_speedDemand',
