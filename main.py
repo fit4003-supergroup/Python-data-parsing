@@ -15,7 +15,9 @@ import combined_feature_generation
 import preprocessing
 import demand_calculations
 import diversity_calculations
-import speed_demand_fix 
+import speed_demand_fix
+import categorical_feature_mapping
+import quantitative_feature_mapping
 
 """
 READ INPUT FILE
@@ -23,7 +25,7 @@ READ INPUT FILE
 # read the csv file
 file_name = 'DataSetfeatures.csv'
 modified_file_name = 'DataSetfeatures-modified.csv'
-DATA_LIMIT = 10000  # only reads first 10000 rows
+DATA_LIMIT = 1000  # only reads first 1000 rows
 print('Reading ' + str(DATA_LIMIT) + " lines from " + file_name)
 data = pd.read_csv(file_name, nrows=DATA_LIMIT, index_col=0)
 
@@ -33,13 +35,19 @@ DATA SET MODIFICATION
 print('\nRecalculating Speed Demand...')
 modified_data = speed_demand_fix.calculate_speed_demand(data)
 
+print('\nMapping Categorical Variables to Integer Values...')
+modified_data = categorical_feature_mapping.categorical_feature_mapping(modified_data)
+
+print('\nMapping Quantitative Variables to Demand Values...')
+modified_data = quantitative_feature_mapping.convert_to_demand(modified_data)
+
 """
 CALCULATE COMBINATION FEATURES
 """
 print('\nCalculating combination features...')
 modified_data = combined_feature_generation.calculate_combined_features(modified_data)
 
-print("saving speed demand & combined features...")
+print("\nSaving modified features...")
 modified_data.to_csv(modified_file_name)
 
 """
@@ -47,7 +55,7 @@ PRE-PROCESSING STEPS
 """
 print('\nBeginning Pre-processing...')
 
-# read data again 
+# read data again
 # need to do this because indexing needs to be different for following steps
 data = pd.read_csv(modified_file_name, nrows=DATA_LIMIT)
 
@@ -63,21 +71,85 @@ demand_feature_names = [
     'feature_totalPedestrians',
     'feature_totalStaticObstacles',
     'feature_totalRoadUsers',
+    'feature_obstaclesAverageDistanceDemand',
+    'feature_obstaclesMinimumDistanceDemand',
+    'feature_obstaclesMaximumDistanceDemand',
+    'feature_obstaclesAverageVelocityDemand',
+    'feature_obstaclesMaximumVelocityDemand',
+    'feature_obstaclesMinimumVelocityDemand',
+    'feature_obstaclesAverageAccelerationDemand',
+    'feature_obstaclesMaximumAccelerationDemand',
+    'feature_obstaclesMinimumAccelerationDemand',
+    'feature_ego_operationDemand',
+    'feature_operationOfObstacleHavingMaximumDistanceDemand',
+    'feature_operationOfObstacleHavingMinimumDistanceDemand',
+    'feature_operationOfObstacleHavingMaximumSpeedDemand',
+    'feature_operationOfObstacleHavingMinimumSpeedDemand',
+    'feature_operationOfObstacleHavingMaximumVelocityDemand',
+    'feature_operationOfObstacleHavingMinimumVelocityDemand',
+    'feature_operationOfObstacleHavingMaximumAccelerationDemand',
+    'feature_operationOfObstacleHavingMinimumAccelerationDemand',
+    'feature_operationOfObstacleHavingMaximumVolumeDemand',
+    'feature_operationOfObstacleHavingMinimumVolumeDemand',
+    'feature_combo_rain_fog_wetness_time',
+    'feature_combo_speed_acceleration_obstaclesMinDist'
 ]
 
 processed_demand_features = preprocessing.feature_stats(data, demand_feature_names)
-
 preprocessing.print_to_demand_csv(demand_feature_names, processed_demand_features)
 
 # list features for calculations
 diversity_feature_names = [
     'feature_ego_acceleration',
+    'feature_ego_throttle',
+    'feature_ego_steeringTarget',
+    'feature_ego_brake',
+    'feature_ego_steeringRate',
+    'feature_ego_velocityx',
+    'feature_ego_velocityy',
+    'feature_ego_accelerationx',
+    'feature_ego_accelerationy',
+    'feature_ego_accelerationz',
+    'feature_ego_positionx',
+    'feature_ego_positiony',
+    'feature_ego_positionz',
+    'feature_ego_operationDemand',
+    'feature_rainDemand',
+    'feature_fogDemand',
+    'feature_wetnessDemand',
+    'feature_timeDemand',
+    'feature_scenarioTrafficLightDemand',
+    'feature_trafficLight',
+    'feature_scenarioSideWalkDemand',
     'feature_ego_speed',
     'feature_totalNPCs',
     'feature_totalPedestrians',
     'feature_totalStaticObstacles',
     'feature_totalRoadUsers',
-    'feature_obstaclesAverageDistance',
+    'feature_obstaclesMaximumDistance',
+    'feature_obstaclesMinimumDistance',
+    'feature_typeObstacleHavingMaximumDistance',
+    'feature_typeObstacleHavingMinimumDistance',
+    'feature_obstaclesMaximumSpeed',
+    'feature_obstaclesMinimumSpeed',
+    'feature_typeObstacleHavingMaximumSpeed',
+    'feature_typeObstacleHavingMinimumSpeed',
+    'feature_ObstaclesMaximumVelocity',
+    'feature_ObstaclesMinimumVelocity',
+    'feature_typeObstacleHavingMaximumVelocity',
+    'feature_typeObstacleHavingMinimumVelocity',
+    'feature_obstaclesMaximumAcceleration',
+    'feature_obstaclesMinimumAcceleration',
+    'feature_typeObstacleHavingMaximumAcceleration',
+    'feature_typeObstacleHavingMinimumAcceleration',
+    'feature_obstaclesMaximumVolume',
+    'feature_obstaclesMinimumVolume',
+    'feature_typeObstacleHavingMaximumVolume',
+    'feature_typeObstacleHavingMinimumVolume',
+    'feature_volumeObstacleWithMinimumDistance',
+    'feature_volumeObstacleWithMaximumSpeed',
+    'feature_volumeObstacleWithMaximumVelocity',
+    'feature_volumeObstacleWithMaximumAcceleration',
 ]
 
 # get feature statistics
