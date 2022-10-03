@@ -132,8 +132,6 @@ def remove_outliers(diversity_features):
     # remove duplicates so scenarios aren't removed twice
     outlier_scenarios = list(dict.fromkeys(outlier_scenarios))
 
-    print('scenarios with outliers: ' + str(outlier_scenarios))
-
     print("Removing Outliers...")
     # remove the scenario data for outlier scenarios
     # for scenario in outlier_scenarios:
@@ -153,8 +151,10 @@ def normalise_feature_values(feature_objects):
     for feature in feature_objects:
         diff = feature.max_value - feature.min_value
         for i in range(0, len(feature.data_values)):
-            normalised_value = (feature.data_values[i] - feature.min_value) / diff
-            # print('normalised value: ' + str(normalised_value))
+            if diff == 0:
+                normalised_value = 0
+            else:
+                normalised_value = (feature.data_values[i] - feature.min_value) / diff
             feature.data_values[i] = normalised_value
     print("Feature Normalisation Complete!")
 

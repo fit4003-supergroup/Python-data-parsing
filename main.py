@@ -11,6 +11,7 @@ Running this file will:
 """
 
 import pandas as pd
+import time
 import combined_feature_generation
 import preprocessing
 import demand_calculations
@@ -23,9 +24,10 @@ import quantitative_feature_mapping
 READ INPUT FILE
 """
 # read the csv file
+start = time.perf_counter()
 file_name = 'DataSetfeatures.csv'
 modified_file_name = 'DataSetfeatures-modified.csv'
-DATA_LIMIT = 1000  # only reads first 1000 rows
+DATA_LIMIT = 10000  # only reads first 10000 rows
 print('Reading ' + str(DATA_LIMIT) + " lines from " + file_name)
 data = pd.read_csv(file_name, nrows=DATA_LIMIT, index_col=0)
 
@@ -198,3 +200,6 @@ demand_res = demand_calculations.scenario_demands(demand_processed_data, feature
 # write results to output csv file
 demand_calculations.write_output_to_csv(demand_res)
 print('Demand Calculations Complete!')
+
+end = time.perf_counter()
+print(f"\nProcessing completed in {end - start:0.4f} seconds")

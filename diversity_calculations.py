@@ -30,6 +30,7 @@ def overall_scenario_diversity(scenario, overall_data, distance_type = 'manhatta
         two_scenario_property_divs = []
         if i != scenario:
             for feature in feature_names:
+                print('scenario: ' + str(scenario) + ', i: '+str(i)+', feature: '+str(feature))
                 difference = abs((overall_data[feature][scenario] - overall_data[feature][i]))
                 if distance_type == 'manhattan':
                     two_scenario_property_divs.append(difference)
