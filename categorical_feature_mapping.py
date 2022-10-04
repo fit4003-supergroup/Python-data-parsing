@@ -34,7 +34,7 @@ ego_operation_values = {
 }
 
 obstacle_operation_values = {
-    'none': 0,
+    'null': 0,
     'SwitchLane (RightToLeft)': 1,
     'SwitchLane (LeftToRight)': 2,
     'Crossing the road (left to right)': 3,
@@ -48,7 +48,6 @@ obstacle_operation_values = {
 
 
 def categorical_feature_mapping(data):
-
     # columns to add to dataframe
     ego = []
     max_dist = []
@@ -65,7 +64,7 @@ def categorical_feature_mapping(data):
     for index, row in data.iterrows():
         for feature_name in categorical_feature_names:
             # get current category
-            category = row[str(feature_name)]
+            category = row[feature_name]
             # get new value
             new_value = 0
             if feature_name == 'feature_ego_operation':
