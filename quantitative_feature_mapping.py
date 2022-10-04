@@ -53,6 +53,7 @@ def get_velocity_demand(velocity_value):
     :param velocity_value:
     :return:
     """
+
     if velocity_value > 35:
         return 7
     elif 30 < velocity_value <= 35:
@@ -117,7 +118,7 @@ def convert_to_demand(data):
     for index, row in data.iterrows():
         for feature_name in distance_feature_names:
             # get current distance value
-            dist_val = row[feature_name]
+            dist_val = float(row[feature_name])
             # find new demand value
             dist_demand_val = get_distance_demand(dist_val)
             if feature_name == distance_feature_names[0]:
@@ -129,7 +130,7 @@ def convert_to_demand(data):
 
         for feature_name in velocity_feature_names:
             # get current velocity value
-            vel_value = row[feature_name]
+            vel_value = float(row[feature_name])
             # find new demand value
             vel_demand_val = get_velocity_demand(vel_value)
             if feature_name == velocity_feature_names[0]:
@@ -141,7 +142,7 @@ def convert_to_demand(data):
 
         for feature_name in acceleration_feature_names:
             # get current acceleration value
-            acc_value = row[feature_name]
+            acc_value = float(row[feature_name])
             # find new demand value
             acc_demand_val = get_acceleration_value(acc_value)
             if feature_name == acceleration_feature_names[0]:

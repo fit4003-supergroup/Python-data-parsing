@@ -11,6 +11,7 @@ Running this file will:
 """
 
 import pandas as pd
+import random
 import time
 import combined_feature_generation
 import preprocessing
@@ -27,10 +28,26 @@ READ INPUT FILE
 start = time.perf_counter()
 file_name = 'DataSetfeatures.csv'
 modified_file_name = 'DataSetfeatures-modified.csv'
-DATA_LIMIT = 100  # only reads first 10000 rows
-print('Reading ' + str(DATA_LIMIT) + " lines from " + file_name)
+
+# get random subset of data from DataSetFeatures.csv
+p = 0.001   # fraction of og data to retrieve
+
 # keep_default_na ensures 'null' is read as string and not nan type
-data = pd.read_csv(file_name, nrows=DATA_LIMIT, index_col=0, keep_default_na=False)
+data = pd.read_csv(file_name,
+                   skiprows=lambda i: i > 0 and random.random() > p,
+                   index_col=0, header=0,
+                   keep_default_na=False)
+data.to_csv('test.csv')
+
+"""
+# OLD WAY; select first n rows
+DATA_LIMIT = 100  # only reads first 100 rows
+print('Reading ' + str(DATA_LIMIT) + " lines from " + file_name)
+data = pd.read_csv(file_name,
+                   nrows=DATA_LIMIT,
+                   index_col=0,
+                   keep_default_na=False)
+"""
 
 """
 DATA SET MODIFICATION
@@ -60,7 +77,7 @@ print('\nBeginning Pre-processing...')
 
 # read data again
 # need to do this because indexing needs to be different for following steps
-data = pd.read_csv(modified_file_name, nrows=DATA_LIMIT)
+data = pd.read_csv(modified_file_name)
 
 demand_feature_names = [
     'feature_ego_speedDemand',
