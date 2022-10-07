@@ -62,18 +62,24 @@ print('\nBeginning Pre-processing...')
 # need to do this because indexing needs to be different for following steps
 data = pd.read_csv(modified_file_name, nrows=DATA_LIMIT)
 
-demand_feature_names = [
+demand_scenario_features = [
     'feature_ego_speedDemand',
-    'feature_rainDemand',
-    'feature_fogDemand',
-    'feature_wetnessDemand',
-    'feature_timeDemand',
+    'feature_ego_operationDemand',
     'feature_scenarioTrafficLightDemand',
     'feature_scenarioSideWalkDemand',
     'feature_totalNPCs',
     'feature_totalPedestrians',
     'feature_totalStaticObstacles',
     'feature_totalRoadUsers',
+]
+demand_weather_features = [
+    'feature_rainDemand',
+    'feature_fogDemand',
+    'feature_wetnessDemand',
+    'feature_timeDemand',
+    'feature_combo_rain_fog_wetness_time',
+]
+demand_obstacle_attribute_features = [
     'feature_obstaclesAverageDistanceDemand',
     'feature_obstaclesMinimumDistanceDemand',
     'feature_obstaclesMaximumDistanceDemand',
@@ -83,7 +89,9 @@ demand_feature_names = [
     'feature_obstaclesAverageAccelerationDemand',
     'feature_obstaclesMaximumAccelerationDemand',
     'feature_obstaclesMinimumAccelerationDemand',
-    'feature_ego_operationDemand',
+    'feature_combo_speed_acceleration_obstaclesMinDist',
+]
+demand_obstacle_operation_features = [
     'feature_operationOfObstacleHavingMaximumDistanceDemand',
     'feature_operationOfObstacleHavingMinimumDistanceDemand',
     'feature_operationOfObstacleHavingMaximumSpeedDemand',
@@ -94,9 +102,16 @@ demand_feature_names = [
     'feature_operationOfObstacleHavingMinimumAccelerationDemand',
     'feature_operationOfObstacleHavingMaximumVolumeDemand',
     'feature_operationOfObstacleHavingMinimumVolumeDemand',
-    'feature_combo_rain_fog_wetness_time',
-    'feature_combo_speed_acceleration_obstaclesMinDist'
 ]
+
+demand_feature_list = [
+    demand_scenario_features,
+    demand_weather_features,
+    demand_obstacle_attribute_features,
+    demand_obstacle_operation_features
+]
+
+demand_feature_names = demand_scenario_features + demand_weather_features + demand_obstacle_attribute_features + demand_obstacle_operation_features
 
 processed_demand_features = preprocessing.feature_stats(data, demand_feature_names)
 preprocessing.print_to_demand_csv(demand_feature_names, processed_demand_features)
@@ -191,15 +206,25 @@ print('\nBeginning Demand Calculations...')
 # read data from input csv
 demand_processed_data = pd.read_csv('demand_input.csv')
 
-# get metadata about features
-feature_names = list(demand_processed_data.columns)
-features = demand_calculations.feature_stats(demand_processed_data, feature_names)
+# add demand for each sublist of features
+demand_res = []
+for feature_sublist in demand_feature_list:
+  # get metadata about features
+  feature_names = list(demand_processed_data.columns)
+  feature_names = feature_sublist
+  features = demand_calculations.feature_stats(demand_processed_data, feature_names)
 
-# determine the demand values for scenarios
-demand_res = demand_calculations.scenario_demands(demand_processed_data, features)
+  # determine the demand values for scenarios
+  demand_res.append(demand_calculations.scenario_demands(demand_processed_data, features))
 
 # write results to output csv file
-demand_calculations.write_output_to_csv(demand_res)
+demand_sublist_names = [
+    'scenario features demand',
+    'weather features demand',
+    'obstacle attribute features demand',
+    'obstacle operation features demand',
+]
+demand_calculations.write_output_to_csv(demand_res, demand_sublist_names)
 print('Demand Calculations Complete!')
 
 end = time.perf_counter()

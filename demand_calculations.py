@@ -89,7 +89,7 @@ def scenario_demands(overall_data, feature_objects):
     return demands
 
 
-def write_output_to_csv(demand_results):
+def write_output_to_csv(demand_results, feature_sublist_names):
     """
     Writes demand calculation results to
     output file.
@@ -101,9 +101,12 @@ def write_output_to_csv(demand_results):
     with open('demand_output.csv', 'w') as file:
         # create csv writer
         writer = csv.writer(file)
-        writer.writerow(['scenario no.', 'scenario demand'])
+        writer.writerow(['scenario no.'] + feature_sublist_names + ['total scenario demand'])
         # write rows to file
-        for i in range(0, len(demand_results)):
-            writer.writerow([i, demand_results[i]])
+        for i in range(0, len(demand_results[0])):
+            # get the scenario demands for each feature sublist
+            sublist_demands = [demand_results[c][i] for c in range(len(feature_sublist_names))]
+            # write the scenario number, demand sublist values, and total demand value
+            writer.writerow([i] + sublist_demands + [sum(sublist_demands)])
     print('Writing to file Complete!')
 
