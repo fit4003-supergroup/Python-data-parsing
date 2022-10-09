@@ -89,7 +89,7 @@ def scenario_demands(overall_data, feature_objects):
     return demands
 
 
-def write_output_to_csv(demand_results, feature_sublist_names, offset = 0):
+def write_output_to_csv(demand_results, feature_sublist_names, offset = 0, filename = 'demand_output.csv'):
     """
     Writes demand calculation results to
     output file.
@@ -98,7 +98,7 @@ def write_output_to_csv(demand_results, feature_sublist_names, offset = 0):
     """
     print('Writing results to output csv file...')
     # open csv file in write mode
-    with open('demand_output.csv', 'w') as file:
+    with open(filename, 'w') as file:
         # create csv writer
         writer = csv.writer(file)
         writer.writerow(['scenario no.'] + feature_sublist_names + ['total scenario demand'])

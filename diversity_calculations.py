@@ -71,7 +71,7 @@ def compute_diversity(overall_data):
     return diversity_res
 
 
-def write_results_to_csv(diversity_results):
+def write_results_to_csv(diversity_results, filename = 'diversity_output.csv'):
     """
     Writes the diversity results to an output csv file
     :param diversity_results: list of [scenario_no,
@@ -80,7 +80,7 @@ def write_results_to_csv(diversity_results):
     """
     print('Writing results to output csv file...')
     # open csv file in write mode
-    with open('diversity_output.csv', 'w') as file:
+    with open(filename, 'w') as file:
         # create csv writer
         writer = csv.writer(file)
         writer.writerow(['scenario no.', 'scenario diversity'])

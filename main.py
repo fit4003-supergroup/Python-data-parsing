@@ -9,13 +9,20 @@ Running this file will:
 - Run the diversity calculations and output
   results to diversity_output.csv file
 """
-DATA_LIMIT = 8000  # only reads first 10000 rows
+DATA_LIMIT = 50  # only reads first 10000 rows
 import subprocess
 import sys
+import os
 pip_loc = ".\Scripts\pip"
 imports = ['numpy', 'pandas', 'python-dateutil', 'pytz']
 for import_package in imports:
     subprocess.check_call([sys.executable, "-m", "pip", "install", import_package])
+
+parent_path = os.path.abspath(os.path.dirname(__file__))
+try:
+    os.makedirs(parent_path + '\\results')
+except FileExistsError:
+    pass
 
 import pandas as pd
 import time
@@ -238,7 +245,7 @@ def processing_main(clusters = 0, node = 0):
     diversities = compute_diversity(processed_data, NODE_SIZE, OFFSET)
 
     # write to csv
-    diversity_calculations.write_results_to_csv(diversities)
+    diversity_calculations.write_results_to_csv(diversities, 'results\diversity_output' + str(DATA_LIMIT) + '-' + str(node) + '.csv')
     print('Diversity Calculations Complete!')
 
     """
@@ -266,7 +273,7 @@ def processing_main(clusters = 0, node = 0):
         'obstacle attribute features demand',
         'obstacle operation features demand',
     ]
-    demand_calculations.write_output_to_csv(demand_res, demand_sublist_names, OFFSET)
+    demand_calculations.write_output_to_csv(demand_res, demand_sublist_names, OFFSET, 'results\demand_output' + str(DATA_LIMIT) + '-' + str(node) + '.csv')
     print('Demand Calculations Complete!')
 
     end = time.perf_counter()
