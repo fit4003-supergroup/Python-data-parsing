@@ -9,12 +9,11 @@ Running this file will:
 - Run the diversity calculations and output
   results to diversity_output.csv file
 """
-import os
-import sys
-
-parent_dir = os.path.abspath(os.path.dirname(__file__))
-libs_path = os.path.join(parent_dir, 'packages')
-sys.path.append(libs_path)
+import subprocess
+pip_loc = ".\Scripts\pip"
+imports = ['numpy', 'pandas', 'python-dateutil', 'pytz']
+for import_package in imports:
+    subprocess.call(pip_loc + ' install ' + import_package, shell=False)
 
 import pandas as pd
 import time
