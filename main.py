@@ -10,10 +10,11 @@ Running this file will:
   results to diversity_output.csv file
 """
 import subprocess
+import sys
 pip_loc = ".\Scripts\pip"
 imports = ['numpy', 'pandas', 'python-dateutil', 'pytz']
 for import_package in imports:
-    subprocess.call(pip_loc + ' install ' + import_package, shell=False)
+    subprocess.check_call([sys.executable, "-m", "pip", "install", import_package])
 
 import pandas as pd
 import time
