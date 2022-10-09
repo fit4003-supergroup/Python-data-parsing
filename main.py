@@ -51,7 +51,7 @@ def processing_main(clusters = 0, node = 0):
     start = time.perf_counter()
     file_name = 'DataSetfeatures.csv'
     modified_file_name = 'DataSetfeatures-modified.csv'
-    DATA_LIMIT = 50  # only reads first 10000 rows
+    DATA_LIMIT = 8000  # only reads first 10000 rows
     print('Reading ' + str(DATA_LIMIT) + " lines from " + file_name)
     # keep_default_na ensures 'null' is read as string and not nan type
     data = pd.read_csv(file_name, nrows=DATA_LIMIT, index_col=0, keep_default_na=False)
