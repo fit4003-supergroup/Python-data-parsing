@@ -65,6 +65,7 @@ def compute_diversity(overall_data):
     print('Computing the diversity for all of the data...')
     diversity_res = []
     for i in range(len(overall_data)):
+        print("Computing Scenario " + str(i))
         diversity_res.append([i, round(overall_scenario_diversity(i, overall_data), 4)])
     print('Calculations Complete!')
     return diversity_res
