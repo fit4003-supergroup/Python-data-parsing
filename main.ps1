@@ -1,0 +1,1 @@
+﻿.\Python310\python main.py
