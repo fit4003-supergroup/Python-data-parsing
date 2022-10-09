@@ -9,6 +9,7 @@ Running this file will:
 - Run the diversity calculations and output
   results to diversity_output.csv file
 """
+DATA_LIMIT = 8000  # only reads first 10000 rows
 import subprocess
 import sys
 pip_loc = ".\Scripts\pip"
@@ -42,6 +43,21 @@ def compute_diversity(overall_data, size, offset):
     return diversity_res
 
 
+def scenario_demands(overall_data, feature_objects, size, offset):
+    """
+    Calculates the demand values for all scenarios
+    :param feature_objects:
+    :param overall_data: DataFrame of processed data
+    :return: list of demand values
+    """
+    print('Calculating Scenario Demands...')
+    demands = []
+    for i in range(offset, offset + size):
+        demands.append(demand_calculations.individual_scenario_demand(i, overall_data, feature_objects))
+    print('Calculations Complete!')
+    return demands
+
+
 def processing_main(clusters = 0, node = 0):
 
     """
@@ -51,7 +67,7 @@ def processing_main(clusters = 0, node = 0):
     start = time.perf_counter()
     file_name = 'DataSetfeatures.csv'
     modified_file_name = 'DataSetfeatures-modified.csv'
-    DATA_LIMIT = 8000  # only reads first 10000 rows
+
     print('Reading ' + str(DATA_LIMIT) + " lines from " + file_name)
     # keep_default_na ensures 'null' is read as string and not nan type
     data = pd.read_csv(file_name, nrows=DATA_LIMIT, index_col=0, keep_default_na=False)
@@ -241,7 +257,7 @@ def processing_main(clusters = 0, node = 0):
       features = demand_calculations.feature_stats(demand_processed_data, feature_names)
 
       # determine the demand values for scenarios
-      demand_res.append(demand_calculations.scenario_demands(demand_processed_data, features))
+      demand_res.append(scenario_demands(demand_processed_data, features, NODE_SIZE, OFFSET))
 
     # write results to output csv file
     demand_sublist_names = [
@@ -250,7 +266,7 @@ def processing_main(clusters = 0, node = 0):
         'obstacle attribute features demand',
         'obstacle operation features demand',
     ]
-    demand_calculations.write_output_to_csv(demand_res, demand_sublist_names)
+    demand_calculations.write_output_to_csv(demand_res, demand_sublist_names, OFFSET)
     print('Demand Calculations Complete!')
 
     end = time.perf_counter()

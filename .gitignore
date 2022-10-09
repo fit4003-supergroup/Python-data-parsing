@@ -1,4 +1,5 @@
 *.csv
+!DataSetfeatures.csv
 *xlsx
 .idea/*
 /__pycache__
