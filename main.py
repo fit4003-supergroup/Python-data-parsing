@@ -9,7 +9,7 @@ Running this file will:
 - Run the diversity calculations and output
   results to diversity_output.csv file
 """
-DATA_LIMIT = 50  # only reads first 10000 rows
+DATA_LIMIT = 8000  # only reads first 10000 rows
 import subprocess
 import sys
 import os
