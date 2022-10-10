@@ -10,42 +10,47 @@ Running this file will:
   results to diversity_output.csv file
 """
 DATA_LIMIT = 8000  # only reads first 10000 rows
-import subprocess
-import sys
-import os
-pip_loc = ".\Scripts\pip"
-imports = ['numpy', 'pandas', 'python-dateutil', 'pytz']
-for import_package in imports:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", import_package])
+POOLS = 5
 
-parent_path = os.path.abspath(os.path.dirname(__file__))
-try:
-    os.makedirs(parent_path + '\\results')
-except FileExistsError:
-    pass
 
-import pandas as pd
-import time
-import combined_feature_generation
-import preprocessing
-import demand_calculations
-import diversity_calculations
-import speed_demand_fix
-import categorical_feature_mapping
-import quantitative_feature_mapping
+def compute_diversity_multi(overall_data, size, offset):
+    """
+    Computes the diversity of scenarios, or a partition, against all others using multi-threading
+    :param overall_data: the entire dataset being processed
+    :param size: the size of a partition, default is size of dataset
+    :param offset: the offset from the beginning of the dataset,
+    :return: results array in form [[scenario_no, diversity]]
+    """
+
+    print('Computing the diversity for all of the data...')
+    diversity_res = []
+    with Pool(processes=POOLS) as pool:
+        res = []  # pointers to async results
+        for i in range(offset, offset + size):
+            res.append(pool.apply_async(diversity_calculations.overall_scenario_diversity, (i, overall_data)))
+
+        for i in range(len(res)):
+            diversity_res.append([i + offset, round(res[i].get(), 4)])  # blocks until ready
+            print("Computed Scenario " + str(i + offset))
+        print('Calculations Complete!')
+        return diversity_res
+
 
 def compute_diversity(overall_data, size, offset):
     """
-    Computes the diversity of all of the scenarios
-    :param overall_data: DataFrame representation of original data
-    :return: list of [scenario_no, scenario_diversity] for each
-             scenario
+    Computes the diversity of scenarios, or a partition, against all others using multi-threading
+    :param overall_data: the entire dataset being processed
+    :param size: the size of a partition, default is size of dataset
+    :param offset: the offset from the beginning of the dataset,
+    :return: results array in form [[scenario_no, diversity]]
     """
+
     print('Computing the diversity for all of the data...')
     diversity_res = []
     for i in range(offset, offset + size):
         print("Computing Scenario " + str(i))
         diversity_res.append([i, round(diversity_calculations.overall_scenario_diversity(i, overall_data), 4)])
+
     print('Calculations Complete!')
     return diversity_res
 
@@ -65,7 +70,7 @@ def scenario_demands(overall_data, feature_objects, size, offset):
     return demands
 
 
-def processing_main(clusters = 0, node = 0):
+def processing_main(clusters = 1, node = 0):
 
     """
     READ INPUT FILE
@@ -242,7 +247,11 @@ def processing_main(clusters = 0, node = 0):
     processed_data = pd.read_csv('diversity_input.csv')
 
     # compute diversity
-    diversities = compute_diversity(processed_data, NODE_SIZE, OFFSET)
+    diversities = []
+    if POOLS > 1:
+        diversities = compute_diversity_multi(processed_data, NODE_SIZE, OFFSET)
+    else:
+        diversities = compute_diversity(processed_data, NODE_SIZE, OFFSET)
 
     # write to csv
     diversity_calculations.write_results_to_csv(diversities, 'results\diversity_output' + str(DATA_LIMIT) + '-' + str(node) + '.csv')
@@ -279,7 +288,33 @@ def processing_main(clusters = 0, node = 0):
     end = time.perf_counter()
     print(f"\nProcessing completed in {end - start:0.4f} seconds")
 
+
 if __name__ == "__main__":
+    import subprocess
+    import sys
+    import os
+
+    pip_loc = ".\Scripts\pip"
+    imports = ['numpy', 'pandas', 'python-dateutil', 'pytz']
+    for import_package in imports:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", import_package])
+
+    parent_path = os.path.abspath(os.path.dirname(__file__))
+    try:
+        os.makedirs(parent_path + '\\results')
+    except FileExistsError:
+        pass
+
+    import pandas as pd
+    import time
+    import combined_feature_generation
+    import preprocessing
+    import demand_calculations
+    import diversity_calculations
+    import speed_demand_fix
+    import categorical_feature_mapping
+    import quantitative_feature_mapping
+    from multiprocessing import Pool
     if len(sys.argv) == 3:
         clusters = int(sys.argv[1])
         node = int(sys.argv[2])
