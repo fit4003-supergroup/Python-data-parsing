@@ -17,7 +17,7 @@ def calculate_combined_features(data):
                             ComboFeatureInput("time", 'feature_timeDemand')]
 
     aggressivness_combo_inputs = [ComboFeatureInput('speed',  'feature_ego_speed'), 
-                                ComboFeatureInput("acceleration",'feature_ego_comAcceleration '), 
+                                ComboFeatureInput("acceleration",'feature_ego_comAcceleration'), 
                                 ComboFeatureInput("obstaclesMinDist", 'feature_obstaclesMinimumDistance')]
 
     print("calculating weather features...")
