@@ -1,0 +1,36 @@
+---
+title: "ISA"
+output: html_document
+date: '2022-10-01'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+setwd("D:/University/Yr 5 Sem 2/FIT4003_repo/Python-data-parsing")
+
+```
+
+```{r}
+demand_input <- read_csv("demand_input.csv")
+```
+
+
+```{r}
+all_data <- read_csv("DataSetfeatures.csv") %>%
+  select(feature_collisionEventDemand)
+
+```
+
+```{r}
+final_data <- cbind(demand_input, all_data)
+```
+
+```{r}
+write_csv(final_data, "demand_input_with_collisionDemand.csv")
+```

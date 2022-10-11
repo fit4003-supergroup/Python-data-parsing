@@ -1,0 +1,59 @@
+---
+title: "ISA"
+output: html_document
+date: '2022-10-01'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+```
+
+
+```{r}
+all_data <- read_csv("test.csv") 
+```
+
+```{r}
+demand_data <- read_csv("demand_output.csv")
+diversity_data <- read_csv("diversity_output.csv")
+
+first_data <- merge(x = demand_data, y = diversity_data, by = "scenario no.", all = TRUE) %>% 
+  rename("demand" = "scenario demand",
+         "diversity" = "scenario diversity")
+```
+
+```{r}
+full_data <- cbind(first_data, all_data)
+```
+
+```{r}
+ggplot(data = full_data, aes(x = demand, y = diversity, color = feature_collisionEvent)) + geom_point()
+```
+
+```{r}
+ggplot(data = full_data, aes(x = factor(demand), fill = feature_collisionEvent)) + geom_bar(stat="count", position=position_dodge())
+```
+
+```{r}
+ggplot(data = full_data, aes(x = diversity, color = feature_collisionEvent)) + geom_histogram(fill="white", binwidth=100)
+```
+
+```{r comVelocity}
+ggplot(data = full_data, aes(x = demand, y = diversity)) + geom_point(aes(color = feature_ego_comVelocity))
+```
+
+```{r ego speed}
+ggplot(data = full_data, aes(x = demand, y = diversity)) + geom_point(aes(color = feature_ego_speed))
+```
+
+```{r total pedestrians}
+ggplot(data = full_data, aes(x = demand, y = diversity)) + geom_point(aes(color = factor(feature_totalPedestrians)))
+```
+
+

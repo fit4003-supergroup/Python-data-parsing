@@ -53,6 +53,9 @@ def get_velocity_demand(velocity_value):
     :param velocity_value:
     :return:
     """
+    if not isinstance(velocity_value, int):
+        velocity_value = float(velocity_value)
+
     if velocity_value > 35:
         return 7
     elif 30 < velocity_value <= 35:
@@ -78,6 +81,9 @@ def get_acceleration_value(acceleration_value):
     :param acceleration_value:
     :return:
     """
+    if not isinstance(acceleration_value, int):
+        acceleration_value = float(acceleration_value)
+
     if acceleration_value > 15:
         return 6
     elif 12 < acceleration_value <= 15:
