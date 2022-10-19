@@ -104,6 +104,6 @@ def write_output_to_csv(demand_results):
         writer.writerow(['scenario no.', 'scenario demand'])
         # write rows to file
         for i in range(0, len(demand_results)):
-            writer.writerow([i, demand_results[i]])
+            writer.writerow([i+1, demand_results[i]])
     print('Writing to file Complete!')
 

@@ -25,6 +25,8 @@ moderate_max_speed = 8
 
 class SpeedCategory(DemandCategory):
     def __init__(self, speed):
+        if type(speed) == str:
+            print('speed is type: '+str(type(speed)) + ' with value: '+str(speed))
 
         if 0 <= speed <= stop_max_speed:
             DemandCategory.__init__(self, 1, "Stop (0 < speed (m/s) <= 0.01)")
@@ -49,7 +51,8 @@ def calculate_speed_demand(data):
         old_label = row[speed_label_heading]
 
         # generate demand and label
-        category = SpeedCategory(speed)
+        print('speed: '+str(speed)+' at index: '+str(index))
+        category = SpeedCategory(float(speed))
         new_demand = category.demand
         new_label = category.label
 

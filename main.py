@@ -26,28 +26,28 @@ READ INPUT FILE
 """
 # read the csv file
 start = time.perf_counter()
-file_name = 'DataSetfeatures.csv'
+file_name = 'sub-set.csv'
 modified_file_name = 'DataSetfeatures-modified.csv'
 
 # get random subset of data from DataSetFeatures.csv
-p = 0.001   # fraction of og data to retrieve
+p = 0.05   # fraction of og data to retrieve
 
 # keep_default_na ensures 'null' is read as string and not nan type
+"""
 data = pd.read_csv(file_name,
                    skiprows=lambda i: i > 0 and random.random() > p,
                    index_col=0, header=0,
                    keep_default_na=False)
 data.to_csv('test.csv')
-
 """
+
 # OLD WAY; select first n rows
-DATA_LIMIT = 100  # only reads first 100 rows
-print('Reading ' + str(DATA_LIMIT) + " lines from " + file_name)
+#DATA_LIMIT = 100  # only reads first 5000 rows
+#print('Reading ' + str(DATA_LIMIT) + " lines from " + file_name)
 data = pd.read_csv(file_name,
-                   nrows=DATA_LIMIT,
                    index_col=0,
                    keep_default_na=False)
-"""
+data.to_csv('test.csv')
 
 """
 DATA SET MODIFICATION
@@ -79,6 +79,42 @@ print('\nBeginning Pre-processing...')
 # need to do this because indexing needs to be different for following steps
 data = pd.read_csv(modified_file_name)
 
+# demand_feature_names = [
+#     'feature_ego_speedDemand',
+#     'feature_rainDemand',
+#     'feature_fogDemand',
+#     'feature_wetnessDemand',
+#     'feature_timeDemand',
+#     'feature_scenarioTrafficLightDemand',
+#     'feature_scenarioSideWalkDemand',
+#     'feature_totalNPCs',
+#     'feature_totalPedestrians',
+#     'feature_totalStaticObstacles',
+#     'feature_totalRoadUsers',
+#     'feature_obstaclesAverageDistanceDemand',
+#     'feature_obstaclesMinimumDistanceDemand',
+#     'feature_obstaclesMaximumDistanceDemand',
+#     'feature_obstaclesAverageVelocityDemand',
+#     'feature_obstaclesMaximumVelocityDemand',
+#     'feature_obstaclesMinimumVelocityDemand',
+#     'feature_obstaclesAverageAccelerationDemand',
+#     'feature_obstaclesMaximumAccelerationDemand',
+#     'feature_obstaclesMinimumAccelerationDemand',
+#     'feature_ego_operationDemand',
+#     'feature_operationOfObstacleHavingMaximumDistanceDemand',
+#     'feature_operationOfObstacleHavingMinimumDistanceDemand',
+#     'feature_operationOfObstacleHavingMaximumSpeedDemand',
+#     'feature_operationOfObstacleHavingMinimumSpeedDemand',
+#     'feature_operationOfObstacleHavingMaximumVelocityDemand',
+#     'feature_operationOfObstacleHavingMinimumVelocityDemand',
+#     'feature_operationOfObstacleHavingMaximumAccelerationDemand',
+#     'feature_operationOfObstacleHavingMinimumAccelerationDemand',
+#     'feature_operationOfObstacleHavingMaximumVolumeDemand',
+#     'feature_operationOfObstacleHavingMinimumVolumeDemand',
+#     'feature_combo_rain_fog_wetness_time',
+#     'feature_combo_speed_acceleration_obstaclesMinDist'
+# ]
+
 demand_feature_names = [
     'feature_ego_speedDemand',
     'feature_rainDemand',
@@ -91,28 +127,13 @@ demand_feature_names = [
     'feature_totalPedestrians',
     'feature_totalStaticObstacles',
     'feature_totalRoadUsers',
-    'feature_obstaclesAverageDistanceDemand',
     'feature_obstaclesMinimumDistanceDemand',
     'feature_obstaclesMaximumDistanceDemand',
-    'feature_obstaclesAverageVelocityDemand',
     'feature_obstaclesMaximumVelocityDemand',
     'feature_obstaclesMinimumVelocityDemand',
-    'feature_obstaclesAverageAccelerationDemand',
     'feature_obstaclesMaximumAccelerationDemand',
     'feature_obstaclesMinimumAccelerationDemand',
     'feature_ego_operationDemand',
-    'feature_operationOfObstacleHavingMaximumDistanceDemand',
-    'feature_operationOfObstacleHavingMinimumDistanceDemand',
-    'feature_operationOfObstacleHavingMaximumSpeedDemand',
-    'feature_operationOfObstacleHavingMinimumSpeedDemand',
-    'feature_operationOfObstacleHavingMaximumVelocityDemand',
-    'feature_operationOfObstacleHavingMinimumVelocityDemand',
-    'feature_operationOfObstacleHavingMaximumAccelerationDemand',
-    'feature_operationOfObstacleHavingMinimumAccelerationDemand',
-    'feature_operationOfObstacleHavingMaximumVolumeDemand',
-    'feature_operationOfObstacleHavingMinimumVolumeDemand',
-    'feature_combo_rain_fog_wetness_time',
-    'feature_combo_speed_acceleration_obstaclesMinDist'
 ]
 
 processed_demand_features = preprocessing.feature_stats(data, demand_feature_names)
@@ -176,7 +197,7 @@ diversity_feature_names = [
 processed_diversity_features = preprocessing.feature_stats(data, diversity_feature_names)
 
 # remove outliers from data
-preprocessing.remove_outliers(processed_diversity_features)
+# preprocessing.remove_outliers(processed_diversity_features)
 
 # normalise data values
 preprocessing.normalise_feature_values(processed_diversity_features)
